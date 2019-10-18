@@ -13,10 +13,11 @@
 # Install
 다운로드 받은 디렉토리 안으로 이동하여 아래 명령어를 입력
 
-```sudo cp ./boot-select /usr/local/bin/```
+```sudo apt install boot-select```
 
 # Usage
- * sudo boot-select
+ * 프로그램 > boot-select
+ * 또는 터미널에서 sudo boot-select
  * 기본값으로 설정을 원하는 부팅메뉴를 선택하면 자동으로 재시작
 
  # 이슈 또는 버그
