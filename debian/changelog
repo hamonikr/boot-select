@@ -1,0 +1,13 @@
+boot-select (1.0.1) sun; urgency=medium
+
+  * convert to zenity ui
+  * grub2 supported
+
+ -- HamoniKR <pkg@hamonikr.org>  Fri, 18 Oct 2019 14:34:16 +0900
+
+boot-select (1.0.0) sun; urgency=medium
+
+  * Initial release
+
+  -- HamoniKR <pkg@hamonikr.org>  Fri, 11 Oct 2019 02:11:12 +0900
+

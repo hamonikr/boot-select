@@ -1,0 +1,14 @@
+Source: boot-select
+Section: admin
+Priority: optional
+Maintainer: HamoniKR <pkg@hamonikr.org>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.5
+
+Package: boot-select
+Architecture: all
+Depends: zenity,
+         grub2-common,
+         ${misc:Depends},
+Description: Boot Menu Select tool for HamoniKR
+ 하모니카 리눅스의 부팅 메뉴를 선택할 수 있는 프로그램.
