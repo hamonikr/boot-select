@@ -1,3 +1,9 @@
+boot-select (1.0.2) sun; urgency=medium
+
+  * Added polkit rule and action
+
+ -- HamoniKR <pkg@hamonikr.org>  Fri, 18 Oct 2019 19:04:52 +0900
+
 boot-select (1.0.1) sun; urgency=medium
 
   * convert to zenity ui

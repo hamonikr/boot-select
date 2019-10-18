@@ -1,5 +1,5 @@
 Source: boot-select
-Section: admin
+Section: utils
 Priority: optional
 Maintainer: HamoniKR <pkg@hamonikr.org>
 Build-Depends: debhelper (>= 9)

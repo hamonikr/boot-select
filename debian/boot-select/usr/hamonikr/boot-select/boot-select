@@ -1,0 +1,190 @@
+#!/bin/bash
+
+# NAME: boot-select
+# PATH: $HOME/bin
+# DESC: 부팅 메뉴를 확인하면서 선택할 수 있도록 UI를 제공하는 부팅메뉴 선택프로그램
+# DATE: Sat, 21 Sep 2019 16:26:47 +0900
+# 
+# Copyright 2019 Kevin Kim <root@hamonikr.org>
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# check permission
+if [[ $UID != 0 ]] ; then
+    clear
+    dialog --title "프로그램 실행 권한 오류" --msgbox "이 프로그램은 실행을 위해서 루트 권한이 필요합니다.\n\nsudo $0 를 사용하세요" 8 80
+    exit 1
+fi
+
+# $TERM variable may be missing when called via desktop shortcut
+CurrentTERM=$(env | grep TERM)
+if [[ $CurrentTERM == "" ]] ; then
+    notify-send --urgency=critical "$0 cannot be run from GUI without TERM environment variable."
+    exit 1
+fi
+
+# Send output to secondary terminal such that previous history isn't cleared on exit
+tput smcup
+
+AllMenusArr=()      # All menu options.
+# Default for hide duplicate and triplicate options with (upstart) and (recovery mode)?
+HideUpstartRecovery=false
+if [[ $1 == short ]] ; then
+    HideUpstartRecovery=true    # override default with first passed parameter "short"
+elif [[ $1 == long ]] ; then
+    HideUpstartRecovery=false   # override default with first passed parameter "long"
+fi
+SkippedMenuEntry=false  # Don't change this value, automatically maintained
+InSubMenu=false     # Within a line beginning with `submenu`?
+InMenuEntry=false   # Within a line beginning with `menuentry` and ending in `{`?
+NextMenuEntryNo=0   # Next grub internal menu entry number to assign
+# Major / Minor internal grub submenu numbers, ie `1>0`, `1>1`, `1>2`, etc.
+ThisSubMenuMajorNo=0
+NextSubMenuMinorNo=0
+CurrTag=""          # Current grub internal menu number, zero based
+CurrText=""         # Current grub menu option text, ie "Ubuntu", "Windows...", etc.
+SubMenuList=""      # Only supports 10 submenus! Numbered 0 to 9. Future use.
+
+while read -r line; do
+    # Example: "           }"
+    BlackLine="${line//[[:blank:]]/}" # Remove all whitespace
+    if [[ $BlackLine == "}" ]] ; then
+        # Add menu option in buffer
+        if [[ $SkippedMenuEntry == true ]] ; then
+            NextSubMenuMinorNo=$(( $NextSubMenuMinorNo + 1 ))
+            SkippedMenuEntry=false
+            continue
+        fi
+        if [[ $InMenuEntry == true ]] ; then
+            InMenuEntry=false
+            if [[ $InSubMenu == true ]] ; then
+                NextSubMenuMinorNo=$(( $NextSubMenuMinorNo + 1 ))
+            else
+                NextMenuEntryNo=$(( $NextMenuEntryNo + 1 ))
+            fi
+        elif [[ $InSubMenu == true ]] ; then
+            InSubMenu=false
+            NextMenuEntryNo=$(( $NextMenuEntryNo + 1 ))
+        else
+            continue # Future error message?
+        fi
+        # Set maximum CurrText size to 68 characters.
+        CurrText="${CurrText:0:67}"
+        AllMenusArr+=($CurrTag "$CurrText")
+    fi
+
+    # Example: "menuentry 'Ubuntu' --class ubuntu --class gnu-linux --class gnu" ...
+    #          "submenu 'Advanced options for Ubuntu' $menuentry_id_option" ...
+    if [[ $line == submenu* ]] ; then
+        # line starts with `submenu`
+        InSubMenu=true
+        ThisSubMenuMajorNo=$NextMenuEntryNo
+        NextSubMenuMinorNo=0
+        SubMenuList=$SubMenuList$ThisSubMenuMajorNo
+        CurrTag=$NextMenuEntryNo
+        CurrText="${line#*\'}"
+        CurrText="${CurrText%%\'*}"
+        AllMenusArr+=($CurrTag "$CurrText") # ie "1 Advanced options for Ubuntu"
+
+    elif [[ $line == menuentry* ]] && [[ $line == *"{"* ]] ; then
+        # line starts with `menuentry` and ends with `{`
+        if [[ $HideUpstartRecovery == true ]] ; then
+            if [[ $line == *"(upstart)"* ]] || [[ $line == *"(recovery mode)"* ]] ; then
+                SkippedMenuEntry=true
+                continue
+            fi
+        fi
+        InMenuEntry=true
+        if [[ $InSubMenu == true ]] ; then
+            : # In a submenu, increment minor instead of major which is "sticky" now.
+            CurrTag=$ThisSubMenuMajorNo">"$NextSubMenuMinorNo
+        else
+            CurrTag=$NextMenuEntryNo
+        fi
+        CurrText="${line#*\'}"
+        CurrText="${CurrText%%\'*}"
+
+    else
+        continue    # Other stuff - Ignore it.
+    fi
+
+done < /boot/grub/grub.cfg
+
+LongVersion=$(grub-install --version)
+ShortVersion=$(echo "${LongVersion:20}")
+DefaultItem=0
+
+if [[ $HideUpstartRecovery == true ]] ; then
+    MenuText="Menu No.     ----------- Menu Name -----------"
+else
+    MenuText="Menu No. --------------- Menu Name ---------------"
+fi
+
+while true ; do
+
+    Choice=$(whiptail --clear \
+        --title "부팅을 원하는 메뉴를 화살표 키로 선택하신후 엔터를 입력하세요" \
+        --backtitle "부팅 메뉴 선택 (HamoniKR Boot Select v 1.0)" \
+        --ok-button "OK" \
+        --cancel-button "Exit" \
+        --default-item "$DefaultItem" \
+        --menu "$MenuText" 18 80 12 \
+        "${AllMenusArr[@]}" \
+        2>&1 >/dev/tty)
+
+    clear
+    if [[ $Choice == "" ]]; then break ; fi
+    DefaultItem=$Choice
+
+    for (( i=0; i < ${#AllMenusArr[@]}; i=i+2 )) ; do
+        if [[ "${AllMenusArr[i]}" == $Choice ]] ; then
+            i=$i+1
+            MenuEntry="menuentry '"${AllMenusArr[i]}"'"
+            break
+        fi
+    done
+
+    if (whiptail --backtitle "부팅 메뉴 선택 (HamoniKR Boot Select v 1.0)" --title "선택한 부팅 메뉴를 기본으로 설정하기" --yesno "현재 선택된 부팅 메뉴 인덱스 : $DefaultItem \n\n\
+선택한 메뉴를 기본값으로 사용하시겠습니까?\n\
+(주의 : 예를 선택하시면 시스템이 재시작 됩니다)" 14 80); then
+        sudo grub-set-default "$DefaultItem"
+        {
+            for ((i = 0 ; i <= 100 ; i+=20)); do
+                sleep 1
+                echo $i 
+            done
+        } | whiptail --backtitle "부팅 메뉴 선택 (HamoniKR Boot Select v 1.0)" --gauge "현재 선택된 부팅 메뉴 인덱스 : $DefaultItem\n\n잠시 후 시스템이 재시작 됩니다..." 14 80 0
+        reboot
+        # echo "User selected Yes, exit status was $?."
+    else
+        # echo "User selected No, exit status was $?."
+        continue        
+    fi
+
+    TheGameIsAfoot=false
+    # while read -r line ; do
+    #     if [[ $line = *"$MenuEntry"* ]]; then TheGameIsAfoot=true ; fi
+    #     if [[ $TheGameIsAfoot == true ]]; then
+    #         echo $line
+    #         if [[ $line = *"}"* ]]; then break ; fi
+    #     fi
+    # done < /boot/grub/grub.cfg
+
+    read -p "Press <Enter> to continue"
+
+done
+
+# Restore output to primary terminal
+tput rmcup
+
+exit 0
