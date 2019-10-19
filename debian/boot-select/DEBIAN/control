@@ -2,7 +2,7 @@ Package: boot-select
 Version: 1.0.2
 Architecture: all
 Maintainer: HamoniKR <pkg@hamonikr.org>
-Installed-Size: 53
+Installed-Size: 54
 Depends: zenity, grub2-common
 Section: utils
 Priority: optional

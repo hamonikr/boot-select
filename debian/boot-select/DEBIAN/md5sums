@@ -5,4 +5,4 @@ c33023ed9176ad335369eb6359012157  usr/hamonikr/boot-select/hamonikr-boot-select
 5f1235e1029e2057745fed886bd60828  usr/share/doc/boot-select/changelog.gz
 1401bf93d2269e8d3c4da47ff418cf43  usr/share/doc/boot-select/copyright
 0675fa679e902943230f76c069623cdb  usr/share/icons/hicolor/256x256/apps/boot-select.png
-814b779ba1bb4633d1c42b9338a61399  usr/share/polkit-1/actions/org.hamonikr.pkexec.boot-select.policy
+7ebcdcedc3a849ecc31be2b219a14528  usr/share/polkit-1/actions/org.hamonikr.pkexec.boot-select.policy
