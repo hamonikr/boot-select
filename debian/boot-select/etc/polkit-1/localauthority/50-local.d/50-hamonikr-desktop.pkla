@@ -1,6 +1,0 @@
-[Require admin privilege for Boot-Select]
-Identity=unix-user:*
-Action=org.hamonikr.pkexec.boot-select
-ResultAny=auth_admin
-ResultInactive=auth_admin
-ResultActive=auth_admin
