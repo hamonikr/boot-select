@@ -15,7 +15,7 @@
  * Apache 2.0
 
 # Install
-다운로드 받은 디렉토리 안으로 이동하여 아래 명령어를 입력
+터미널을 열고 아래 명령어를 입력
 
 ```sudo apt install boot-select```
 
