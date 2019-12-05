@@ -7,6 +7,10 @@
  * 다른 운영체제나 여러개의 커널을 설치한 경우 기본 부팅메뉴 선택하는 프로그램
  * 하모니카에 설치된 grub2 지원
 
+![run](docs/boot-select-run.png)
+![boot-select](docs/boot-select.png)
+
+
 # License
  * Apache 2.0
 
