@@ -1,10 +1,13 @@
-![hamonikr-me](https://img.shields.io/badge/hamonikr-me-orange)
-![hamonikr-64](https://img.shields.io/badge/hamonikr-64bit-green)
-![hamonikr-1.4](https://img.shields.io/badge/hamonikr-1.4-blueviolet)
+![hamonikr-me](https://img.shields.io/badge/hamonikr-me-blueviolet)
+![hamonikr-sun](https://img.shields.io/badge/hamonikr-sun-green)
+![hamonikr-jin](https://img.shields.io/badge/hamonikr-jin-violet)
+
 
 # boot-select
- * HamoniKR-ME (>= 1.4) 지원
- * 다른 운영체제나 여러개의 커널을 설치한 경우 기본 부팅메뉴 선택하는 프로그램
+
+PC에 여러개의 다른 운영체제나 여러개의 커널을 설치한 경우, 기본으로 부팅 될 메뉴를 선택하는 프로그램입니다.
+
+ * HamoniKR-ME (>= 1.4), Ubuntu (>= 18.04), LinuxMint(>=19) 지원
  * 하모니카에 설치된 grub2 지원
 
 ![run](docs/boot-select-run.png)
@@ -15,9 +18,23 @@
  * Apache 2.0
 
 # Install
-터미널을 열고 아래 명령어를 입력
 
-```sudo apt install boot-select```
+## HamoniKR 사용자의 경우
+터미널을 열고(Ctrl+Alt+T) 아래 명령어를 입력하세요.
+
+```
+sudo apt update
+sudo apt install -y boot-select
+```
+
+## Ubuntu, LinuxMint 등 다른 배포판 사용자의 경우
+터미널을 열고(Ctrl+Alt+T) 아래 명령어를 입력하세요.
+
+```
+curl -sL https://pkg.hamonikr.org/add-hamonikr.apt | sudo -E bash -
+sudo apt install -y boot-select
+```
+
 
 # Usage
  * 프로그램 > boot-select
