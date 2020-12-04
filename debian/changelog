@@ -1,3 +1,13 @@
+boot-select (1.2.0) jin; urgency=medium
+
+  * Rebuild for HamoniKR 4.0
+  * Update usr/hamonikr/boot-select/boot-select-x
+   - Add patamenter GRUB_SAVEDEFAULT, GRUB_DEFAULT if not avaliable
+  * Added debian/links
+   - for execute in terminal /usr/local/bin/boot-select 
+
+ -- HamoniKR <pkg@hamonikr.org>  Fri, 04 Dec 2020 16:11:10 +0900
+
 boot-select (1.1.0) sun; urgency=medium
 
   * Added /etc/default/grub setting

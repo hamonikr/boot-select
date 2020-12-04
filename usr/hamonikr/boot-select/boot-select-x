@@ -3,7 +3,6 @@
 # NAME: boot-select
 # PATH: $HOME/bin
 # DESC: 부팅 메뉴를 확인하면서 선택할 수 있도록 UI를 제공하는 부팅메뉴 선택프로그램
-# DATE: Sat, 21 Sep 2019 16:26:47 +0900
 # 
 # Copyright 2019 Kevin Kim <root@hamonikr.org>
 # 
@@ -130,7 +129,14 @@ while true ; do
     # break ; exit 0
 
     if [[ $? = 0 ]]; then 
-        sudo grub-set-default "$DefaultItem"    
+        sudo sed -i '/GRUB_DEFAULT=/d' /etc/default/grub
+        sudo sed -i '/GRUB_SAVEDEFAULT=/d' /etc/default/grub
+        sudo sed -i '/GRUB_TIMEOUT=/d' /etc/default/grub
+        echo "GRUB_DEFAULT=saved" | sudo tee -a /etc/default/grub 1>/dev/null
+        echo "GRUB_SAVEDEFAULT=true" | sudo tee -a /etc/default/grub 1>/dev/null
+        # timeout 변경 시 sudo update-grub 필요하며 이 과정은 시간이 걸리므로 일단 제외
+        # echo "GRUB_TIMEOUT=5" | sudo tee -a /etc/default/grub 1>/dev/null
+        sudo grub-set-default "$DefaultItem"
         sleep 1
         sudo reboot
     break ; 
