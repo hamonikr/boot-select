@@ -8,8 +8,8 @@
   <vendor_url>https://hamonikr.org</vendor_url>
 
   <action id="org.hamonikr.pkexec.boot-select">
-    <message gettext-domain="boot-select">Authentication is required to run the Boot-Select Configuration</message>
-    <message gettext-domain="boot-select" xml:lang="ko">이 프로그램은 관리자 권한이 필요합니다.</message>    
+    <message>Authentication is required to run the Boot-Select Configuration</message>
+    <message xml:lang="ko">이 프로그램은 관리자 권한이 필요합니다.</message>    
     <icon_name>boot-select</icon_name>
     <defaults>
       <allow_any>auth_admin</allow_any>

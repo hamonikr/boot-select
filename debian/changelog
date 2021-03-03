@@ -1,3 +1,12 @@
+boot-select (1.3.0) jin; urgency=medium
+
+  * Update usr/hamonikr/boot-select/boot-select-x
+   - Add korean language and english strings
+   - Add grub timeout as 5 sec
+   - add update-grub cmd
+
+ -- HamoniKR <pkg@hamonikr.org>  Wed, 03 Mar 2021 11:24:14 +0900
+
 boot-select (1.2.0) jin; urgency=medium
 
   * Rebuild for HamoniKR 4.0
