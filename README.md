@@ -39,7 +39,7 @@ wget -qO- https://repo.hamonikr.org/hamonikr-app.apt | sudo -E bash -
 sudo apt install neofetch
 ```
 
-### ubuntu (<>=20.04) , HamoniKR (<=5.0)
+### ubuntu (<=20.04) , HamoniKR (<=5.0)
 
 터미널을 열고(Ctrl+Alt+T) 아래 명령어를 입력하세요.
 
