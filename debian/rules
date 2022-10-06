@@ -2,3 +2,7 @@
 
 %:
 	dh ${@}
+
+# for install files in /usr/local
+override_dh_usrlocal:
+		

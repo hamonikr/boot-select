@@ -1,0 +1,3 @@
+#!/bin/sh
+
+pkexec /usr/local/bin/boot-select-exec

@@ -1,9 +1,8 @@
 #!/bin/bash
 
-# NAME: boot-select
-# PATH: $HOME/bin
+# NAME: boot-select-exec
+# 
 # DESC: 부팅 메뉴를 확인하면서 선택할 수 있도록 UI를 제공하는 부팅메뉴 선택프로그램
-# DATE: Sat, 21 Sep 2019 16:26:47 +0900
 # 
 # Copyright 2019 Kevin Kim <root@hamonikr.org>
 # 
@@ -19,22 +18,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# message i18n
+title="Program execution permission error "
+text="This program requires root privileges to run. "
+text1="Select the menu you want to boot from with the arrow keys and press Enter. "
+column1="Bootable menu list"
+text2="Do you want to set it as default?\n\nIf you click Yes, the system will be restarted automatically.\n\nPlease save all the data you are working on. "
+
+case $LANG in
+	ko*)
+        title="프로그램 실행 권한 오류"
+        text="이 프로그램은 실행을 위해서 루트 권한이 필요합니다."
+        text1="부팅을 원하는 메뉴를 화살표 키로 선택하신후 엔터를 입력하세요"
+        column1="부팅 가능한 메뉴들"
+        text2="선택항목을 기본으로 설정하시겠습니까?\n\nYes 를 누르시면 시스템이 자동으로 재시작 됩니다.\n\n작업중인 데이터를 모두 저장하시기 바랍니다."
+        ;;
+    *)
+        title="Program execution permission error "
+        text="This program requires root privileges to run. "
+        text1="Select the menu you want to boot from with the arrow keys and press Enter. "
+        column1="Bootable menu list"
+        text2="Do you want to set it as default?\n\nIf you click Yes, the system will be restarted automatically.\n\nPlease save all the data you are working on. "
+        ;;
+esac
+
 # check permission
 if [[ $UID != 0 ]] ; then
     clear
-    dialog --title "프로그램 실행 권한 오류" --msgbox "이 프로그램은 실행을 위해서 루트 권한이 필요합니다.\n\nsudo $0 를 사용하세요" 8 80
+    zenity --error --title="$title" --text="$text" --width=300 --height=200
     exit 1
 fi
-
-# $TERM variable may be missing when called via desktop shortcut
-CurrentTERM=$(env | grep TERM)
-if [[ $CurrentTERM == "" ]] ; then
-    notify-send --urgency=critical "$0 cannot be run from GUI without TERM environment variable."
-    exit 1
-fi
-
-# Send output to secondary terminal such that previous history isn't cleared on exit
-tput smcup
 
 AllMenusArr=()      # All menu options.
 # Default for hide duplicate and triplicate options with (upstart) and (recovery mode)?
@@ -124,73 +137,35 @@ LongVersion=$(grub-install --version)
 ShortVersion=$(echo "${LongVersion:20}")
 DefaultItem=0
 
-if [[ $HideUpstartRecovery == true ]] ; then
-    MenuText="Menu No.     ----------- Menu Name -----------"
-else
-    MenuText="Menu No. --------------- Menu Name ---------------"
-fi
-
 while true ; do
 
-    Choice=$(whiptail --clear \
-        --title "부팅을 원하는 메뉴를 화살표 키로 선택하신후 엔터를 입력하세요" \
-        --backtitle "부팅 메뉴 선택 (HamoniKR Boot Select v 1.0)" \
-        --ok-button "OK" \
-        --cancel-button "Exit" \
-        --default-item "$DefaultItem" \
-        --menu "$MenuText" 18 80 12 \
-        "${AllMenusArr[@]}" \
-        2>&1 >/dev/tty)
+    Choice=$(zenity  --list  --text "$text1" --column "NO" --column "$column1" \
+    "$MenuText ${AllMenusArr[@]}" \
+    --width=600 --height=300); 
 
-    clear
     if [[ $Choice == "" ]]; then break ; fi
     DefaultItem=$Choice
 
-    for (( i=0; i < ${#AllMenusArr[@]}; i=i+2 )) ; do
-        if [[ "${AllMenusArr[i]}" == $Choice ]] ; then
-            i=$i+1
-            MenuEntry="menuentry '"${AllMenusArr[i]}"'"
-            break
-        fi
-    done
+    zenity --question --text="\"$Choice\" : $text2" --ok-label="Yes" --cancel-label="No" --width=300 --height=200
 
-    if (whiptail --backtitle "부팅 메뉴 선택 (HamoniKR Boot Select v 1.1)" --title "선택한 부팅 메뉴를 기본으로 설정하기" --yesno "현재 선택된 부팅 메뉴 인덱스 : $DefaultItem \n\n\
-선택한 메뉴를 기본값으로 사용하시겠습니까?\n\
-(주의 : 예를 선택하시면 시스템이 재시작 됩니다)" 14 80); then
-        # /etc/default/grub 설정을 조정
-        sed '/GRUB_DEFAULT/,$d' /etc/default/grub
-        sed '/GRUB_SAVEDEFAULT/,$d' /etc/default/grub        
-        echo -e "GRUB_DEFAULT=saved" | tee -a /etc/default/grub
-        echo -e "GRUB_SAVEDEFAULT=true" | tee -a /etc/default/grub
+    # zenity --error --text="$? / $DefaultItem" 
+    # break ; exit 0
 
+    if [[ $? -eq 0 ]]; then 
+        sudo sed -i '/GRUB_DEFAULT=/d' /etc/default/grub
+        sudo sed -i '/GRUB_SAVEDEFAULT=/d' /etc/default/grub
+        sudo sed -i '/GRUB_TIMEOUT=/d' /etc/default/grub
+        echo "GRUB_DEFAULT=saved" | sudo tee -a /etc/default/grub 1>/dev/null
+        echo "GRUB_SAVEDEFAULT=true" | sudo tee -a /etc/default/grub 1>/dev/null
+        echo "GRUB_TIMEOUT=5" | sudo tee -a /etc/default/grub 1>/dev/null
+        echo "Selected : $DefaultItem"
+        sudo update-grub
         sudo grub-set-default "$DefaultItem"
-        {
-            for ((i = 0 ; i <= 100 ; i+=20)); do
-                sleep 1
-                echo $i 
-            done
-        } | whiptail --backtitle "부팅 메뉴 선택 (HamoniKR Boot Select v 1.1)" --gauge "현재 선택된 부팅 메뉴 인덱스 : $DefaultItem\n\n잠시 후 시스템이 재시작 됩니다..." 14 80 0
-        reboot
-        # echo "User selected Yes, exit status was $?."
-    else
-        # echo "User selected No, exit status was $?."
-        continue        
+        sleep 1
+        sudo reboot
+    break ; 
     fi
 
-    TheGameIsAfoot=false
-    # while read -r line ; do
-    #     if [[ $line = *"$MenuEntry"* ]]; then TheGameIsAfoot=true ; fi
-    #     if [[ $TheGameIsAfoot == true ]]; then
-    #         echo $line
-    #         if [[ $line = *"}"* ]]; then break ; fi
-    #     fi
-    # done < /boot/grub/grub.cfg
-
-    read -p "Press <Enter> to continue"
-
 done
-
-# Restore output to primary terminal
-tput rmcup
 
 exit 0
