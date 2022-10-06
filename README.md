@@ -36,7 +36,7 @@ PC에 여러개의 다른 운영체제나 여러개의 커널을 설치한 경�
 ```
 wget -qO- https://repo.hamonikr.org/hamonikr-app.apt | sudo -E bash -
 
-sudo apt install neofetch
+sudo apt install boot-select
 ```
 
 ### ubuntu (<=20.04) , HamoniKR (<=5.0)

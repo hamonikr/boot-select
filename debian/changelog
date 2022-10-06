@@ -1,6 +1,6 @@
 boot-select (1.4.0) jammy; urgency=medium
 
-  * Chaged structure
+  * Changed structure
    - removed unused files
    - update desktop file
    - removed link file
