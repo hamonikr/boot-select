@@ -1,3 +1,9 @@
+boot-select (1.4.1) noble; urgency=medium
+
+  * Release for Ubuntu 24.04
+
+ -- HamoniKR <pkg@hamonikr.org>  Sat, 22 Jun 2024 12:32:02 +0900
+
 boot-select (1.4.0) jammy; urgency=medium
 
   * Changed structure
