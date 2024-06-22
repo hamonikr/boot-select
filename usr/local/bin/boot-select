@@ -1,3 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 
-pkexec /usr/local/bin/boot-select-exec
+USER=$(logname 2>/dev/null || echo "$USER")
+USER_HOME=$(getent passwd "$USER" | cut -d: -f6)
+
+export DISPLAY=:0
+export XAUTHORITY="$USER_HOME/.Xauthority"
+export XDG_RUNTIME_DIR=/run/user/$(id -u "$USER")
+
+pkexec /usr/local/bin/boot-select.py

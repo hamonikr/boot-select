@@ -8,6 +8,7 @@
   <vendor_url>https://hamonikr.org</vendor_url>
 
   <action id="org.hamonikr.pkexec.boot-select">
+    <description>Run Boot-Select Configuration</description>
     <message>Authentication is required to run the Boot-Select Configuration</message>
     <message xml:lang="ko">이 프로그램은 관리자 권한이 필요합니다.</message>    
     <icon_name>boot-select</icon_name>
@@ -16,8 +17,8 @@
       <allow_inactive>auth_admin</allow_inactive>
       <allow_active>auth_admin</allow_active>
     </defaults>
-    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/bin/boot-select-exec</annotate>
-    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/bin/boot-select.py</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>    
   </action>
 
 </policyconfig>

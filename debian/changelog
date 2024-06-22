@@ -1,3 +1,10 @@
+boot-select (1.5.0) noble; urgency=medium
+
+  * Release for Ubuntu 24.04
+   - Changed to GTK app for zenity theme bug
+
+ -- HamoniKR <pkg@hamonikr.org>  Sat, 22 Jun 2024 12:58:57 +0900
+
 boot-select (1.4.1) noble; urgency=medium
 
   * Release for Ubuntu 24.04
