@@ -1,3 +1,10 @@
+boot-select (1.5.1) paektu; urgency=medium
+
+  [Kevin Kim]
+  * Release for HamoniKR paektu
+
+ -- HamoniKR <pkg@hamonikr.org>  Mon, 29 Jul 2024 15:18:59 +0900
+
 boot-select (1.5.0) noble; urgency=medium
 
   * Release for Ubuntu 24.04
@@ -71,4 +78,3 @@ boot-select (1.0.0) sun; urgency=medium
   * Initial release
 
   -- HamoniKR <pkg@hamonikr.org>  Fri, 11 Oct 2019 02:11:12 +0900
-
