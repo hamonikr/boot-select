@@ -15,16 +15,18 @@ text1 = "Select the menu you want to boot from with the arrow keys and press Ent
 column1 = "Bootable menu list"
 text2 = "Do you want to set it as default?\n\nIf you click Yes, the system will be restarted automatically.\n\nPlease save all the data you are working on."
 progress_text = "Applying settings and rebooting..."
+btn_text = "Set Default and Reboot"
 
 # i18n based on LANG environment variable
 lang = os.getenv('LANG', '')
 if lang.startswith('ko'):
     title = "프로그램 실행 권한 오류"
     text = "이 프로그램은 실행을 위해서 루트 권한이 필요합니다."
-    text1 = "부팅을 원하는 메뉴를 화살표 키로 선택하신후 엔터를 입력하세요"
+    text1 = "부팅을 원하는 메뉴를 선택 후 하단의 버튼을 클릭하세요"
     column1 = "부팅 가능한 메뉴들"
-    text2 = "선택항목을 기본으로 설정하시겠습니까?\n\nYes 를 누르시면 시스템이 자동으로 재시작 됩니다.\n\n작업중인 데이터를 모두 저장하시기 바랍니다."
+    text2 = "을 기본으로 설정하시겠습니까?\n\nYes 를 누르시면 시스템이 자동으로 재시작 됩니다.\n\n작업중인 데이터를 모두 저장하시기 바랍니다."
     progress_text = "설정을 적용하고 재시작 중입니다..."
+    btn_text = "저장 후 시스템 재시작"
 
 # Check for root permission
 if os.geteuid() != 0:
@@ -172,9 +174,15 @@ def create_main_window():
     column = Gtk.TreeViewColumn(column1, renderer, text=1)
     treeview.append_column(column)
 
-    vbox.pack_start(treeview, True, True, 0)
+    # Add TreeView to ScrolledWindow
+    scrolled_window = Gtk.ScrolledWindow()
+    scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+    scrolled_window.set_min_content_height(300)
+    scrolled_window.set_min_content_width(580)
+    scrolled_window.add(treeview)
+    vbox.pack_start(scrolled_window, True, True, 0)
 
-    button = Gtk.Button(label="Set Default and Reboot")
+    button = Gtk.Button(label=btn_text)
     button.connect("clicked", on_button_clicked, treeview, window)
     vbox.pack_start(button, True, True, 0)
 
@@ -187,12 +195,13 @@ def on_button_clicked(button, treeview, window):
     model, treeiter = selection.get_selected()
     if treeiter is not None:
         choice = model[treeiter][0]
+        choice_text = model[treeiter][1]
         dialog = Gtk.MessageDialog(
             parent=None,
             modal=True,
             message_type=Gtk.MessageType.QUESTION,
             buttons=Gtk.ButtonsType.YES_NO,
-            text=f"\"{choice}\" : {text2}"
+            text=f"\"{choice_text}\" {text2}"
         )
         response = dialog.run()
         dialog.destroy()

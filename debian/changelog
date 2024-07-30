@@ -1,3 +1,10 @@
+boot-select (1.5.2) paektu; urgency=medium
+
+  [Kevin Kim]
+  * Changed TreeView to ScrolledWindow
+
+ -- HamoniKR <pkg@hamonikr.org>  Tue, 30 Jul 2024 14:43:47 +0900
+
 boot-select (1.5.1) paektu; urgency=medium
 
   [Kevin Kim]
